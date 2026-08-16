@@ -38,14 +38,22 @@
   .app{display:flex;min-height:100vh}
 
   /* ---- Sidebar (PC) ---- */
-  .sidebar{width:212px;flex:0 0 212px;margin:14px 0 14px 14px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.7);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:18px 12px;position:sticky;top:14px;align-self:flex-start;height:calc(100vh - 28px);overflow-y:auto}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:266px;max-width:84vw;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-right:1px solid rgba(255,255,255,.7);box-shadow:var(--shadow-lg);padding:18px 14px;z-index:60;display:flex;flex-direction:column;transform:translateX(-112%);transition:transform .26s cubic-bezier(.4,0,.2,1);overflow-y:auto}
+  .sidebar.open{transform:translateX(0)}
   .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px;padding:6px 8px 14px}
   .brand .logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-2));display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -4px rgba(91,91,240,.6)}
   .navitem{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;color:var(--sub);font-weight:600;margin-bottom:4px;border:none;background:none;width:100%;text-align:left;font-size:15px}
   .navitem svg{width:20px;height:20px;flex:0 0 20px}
   .navitem:hover{background:rgba(91,91,240,.07);color:var(--ink)}
   .navitem.active{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 10px 20px -8px rgba(91,91,240,.7),inset 0 1px 0 rgba(255,255,255,.3)}
-  .side-foot{margin-top:18px;padding:12px 8px 0;border-top:1px solid var(--line)}
+  .side-foot{margin-top:auto;padding:16px 8px 4px;border-top:1px solid var(--line)}
+  .nav-x{margin-left:auto;background:none;border:none;font-size:24px;line-height:1;color:var(--sub);min-width:36px;min-height:36px;border-radius:8px}
+  .nav-x:hover{color:var(--ink);background:rgba(16,24,40,.05)}
+  .menubtn{display:none;align-items:center;justify-content:center;width:42px;height:42px;border-radius:11px;border:1px solid var(--line);background:#fff;color:var(--ink);flex:0 0 auto;box-shadow:var(--shadow-sm)}
+  .menubtn:hover{border-color:var(--primary);color:var(--primary)}
+  .menubtn svg{width:22px;height:22px}
+  .scrim{position:fixed;inset:0;background:rgba(15,23,42,.42);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;z-index:55}
+  .scrim.show{opacity:1;visibility:visible}
   .side-foot .hint{font-size:12px;color:var(--sub);margin-bottom:8px}
 
   /* ---- Main ---- */
@@ -212,6 +220,7 @@
   }
   @media (min-width:769px){
     .bottomtabs{display:none}
+    .menubtn{display:flex}
   }
 
   /* 名言警句 */
@@ -259,10 +268,12 @@
 <body>
 <div class="app">
   <!-- PC sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="brand"><span class="logo">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
-    </span>生活工作台</div>
+    </span>生活工作台
+      <button class="nav-x" onclick="closeSidebar()" aria-label="关闭菜单">×</button>
+    </div>
     <button class="navitem active" data-view="goals" onclick="switchView('goals')">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.4" fill="currentColor"/></svg>目标计划
     </button>
@@ -283,10 +294,14 @@
       <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importJSON(this.files[0]);this.value=''">
     </div>
   </aside>
+  <div class="scrim" id="scrim" onclick="closeSidebar()"></div>
 
   <!-- Main -->
   <main class="main">
     <div class="topbar">
+      <button class="menubtn" onclick="toggleSidebar()" aria-label="打开菜单">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
       <h1>全能生活工作台</h1>
       <span class="spacer"></span>
       <button class="tbtn" onclick="exportJSON()">导出</button>
@@ -1315,6 +1330,17 @@ function renderBackupTip(){
 }
 
 /* ============ 视图切换 ============ */
+function toggleSidebar(){
+  var s=document.getElementById('sidebar'),sc=document.getElementById('scrim');
+  var o=s.classList.toggle('open');
+  sc.classList.toggle('show',o);
+  document.body.style.overflow=o?'hidden':'';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('scrim').classList.remove('show');
+  document.body.style.overflow='';
+}
 function switchView(v){
   document.querySelectorAll('.view').forEach(function(s){s.classList.remove('active');});
   document.getElementById('view-'+v).classList.add('active');
@@ -1322,6 +1348,7 @@ function switchView(v){
   if(v==='calendar')renderCalendar();
   if(v==='stats')renderStats();
   window.scrollTo({top:0,behavior:'smooth'});
+  closeSidebar();
   rollQuote();
 }
 
