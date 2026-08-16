@@ -214,6 +214,29 @@
   .edetail .dact{grid-column:1/-1;display:flex;gap:8px;margin-top:4px}
   .edetail .dact .btn{min-height:34px}
   @media(max-width:480px){.edetail{grid-template-columns:1fr}}
+  .btn.block{width:100%;margin:2px 0}
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-end;justify-content:center;z-index:50;padding:0}
+  .modal.show{display:flex}
+  .modal-box{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:18px 18px 22px;max-height:88vh;overflow:auto;animation:sheetUp .22s ease}
+  @keyframes sheetUp{from{transform:translateY(24px);opacity:.55}to{transform:translateY(0);opacity:1}}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .modal-head h3{font-size:17px;margin:0}
+  .modal-x{background:none;border:none;font-size:26px;line-height:1;color:var(--sub);min-width:40px;min-height:40px}
+  .modal-form label{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px;font-weight:600}
+  .modal-form input,.modal-form select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:16px;background:#fff;color:var(--text);box-sizing:border-box}
+  .modal-actions{display:flex;gap:10px;margin-top:18px}
+  .modal-actions .btn{flex:1}
+  .modal-detail .dr{display:flex;gap:10px;font-size:14px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .modal-detail .dk{color:var(--sub);min-width:48px;flex:none}
+  .modal-detail .dv{color:var(--text);word-break:break-all;font-weight:600}
+  .modal-detail .dact{display:flex;gap:10px;margin-top:18px}
+  .modal-detail .dact .btn{flex:1}
+  @media(min-width:560px){
+    .modal{align-items:center;padding:20px}
+    .modal-box{border-radius:18px;animation:zoom .2s ease}
+    @keyframes zoom{from{transform:scale(.94);opacity:.55}to{transform:scale(1);opacity:1}}
+  }
 </style>
 </head>
 <body>
@@ -296,21 +319,8 @@
       <section class="view" id="view-events">
         <div class="view-head"><h2>✅ 事件打卡</h2><span class="desc">消费 / 锻炼 / 学习 / 阅读 / 其他</span></div>
         <div class="card">
-          <h3>记录一笔</h3>
-          <form id="eventForm" class="form-row" onsubmit="return addEvent(event)">
-            <input id="eDate" type="date" required>
-            <select id="eCat">
-              <option value="消费">消费</option>
-              <option value="锻炼">锻炼</option>
-              <option value="学习">学习</option>
-              <option value="阅读">阅读</option>
-              <option value="其他">其他</option>
-            </select>
-            <input id="eTitle" placeholder="内容，如 晨跑 / 聚餐 / 复习" required>
-            <input id="eValue" type="number" placeholder="数值(可选)" step="any" min="0">
-            <input id="eNote" placeholder="备注(可选)">
-            <button type="submit" class="btn primary" id="eSubmit">记一笔</button>
-          </form>
+          <button class="btn primary block" onclick="openEventModal()">＋ 记一笔</button>
+          <p style="font-size:12px;color:var(--sub);margin:10px 2px 0">点下方任意一条记录，可查看 / 编辑 / 删除明细</p>
         </div>
         <div class="card">
           <h3>最近记录 <span style="font-size:12px;color:var(--sub);font-weight:400">（点击圆圈标记完成 / 补卡）</span></h3>
@@ -373,6 +383,43 @@
     </div>
   </main>
 
+  <!-- 事件弹窗 -->
+  <div class="modal" id="eventModal" onclick="if(event.target===this)closeEventModal()">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="emTitle">记一笔</h3>
+        <button class="modal-x" onclick="closeEventModal()" aria-label="关闭">×</button>
+      </div>
+      <form id="eventForm" class="modal-form" onsubmit="return submitEvent(event)">
+        <label>日期<input id="eDate" type="date" required></label>
+        <label>分类
+          <select id="eCat">
+            <option value="消费">消费</option>
+            <option value="锻炼">锻炼</option>
+            <option value="学习">学习</option>
+            <option value="阅读">阅读</option>
+            <option value="其他">其他</option>
+          </select>
+        </label>
+        <label>内容<input id="eTitle" placeholder="如 晨跑 / 聚餐 / 复习" required></label>
+        <label>数值（可选）<input id="eValue" type="number" placeholder="数值" step="any" min="0"></label>
+        <label>备注（可选）<input id="eNote" placeholder="备注"></label>
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="closeEventModal()">取消</button>
+          <button type="submit" class="btn primary" id="eSubmit">保存</button>
+        </div>
+      </form>
+      <div class="modal-detail" id="emDetail" style="display:none">
+        <div id="emDetailBody"></div>
+        <div class="dact">
+          <button class="btn danger" onclick="delEvent(currentDetailId)">删除</button>
+          <button class="btn" id="emDone" onclick="toggleDoneFromDetail()">完成</button>
+          <button class="btn primary" onclick="editFromDetail()">编辑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile bottom tabs -->
   <nav class="bottomtabs">
     <button class="active" data-view="goals" onclick="switchView('goals')">
@@ -413,7 +460,7 @@ var GOAL_PRESETS={
 
 /* ============ 状态 ============ */
 var goals=[], events=[];
-var expId=null, editingId=null;
+var editingId=null, currentDetailId=null;
 var calYear, calMonth; // 当前日历年月
 
 /* ============ 存储 ============ */
@@ -849,7 +896,42 @@ function valText(e){
   if(e.value===0||e.value==null||e.value==='')return '';
   return (c.prefix||'')+e.value+(c.suffix||'');
 }
-function addEvent(e){
+function openEventModal(){
+  editingId=null;
+  document.getElementById('eventForm').reset();
+  document.getElementById('eDate').value=today();
+  document.getElementById('emTitle').textContent='记一笔';
+  document.getElementById('eSubmit').textContent='保存';
+  showEM('form');
+  document.getElementById('eventModal').classList.add('show');
+}
+function viewDetail(id){
+  var ev=events.find(function(x){return x.id===id;});
+  if(!ev)return;
+  currentDetailId=id;
+  document.getElementById('emTitle').textContent=ev.title;
+  var rows=[['日期',ev.date],['分类',ev.cat],['内容',ev.title],['数值',ev.value?valText(ev):'—'],['备注',ev.note?ev.note:'—'],['状态',ev.done?'已完成':'未完成']];
+  var h='';
+  rows.forEach(function(r){h+='<div class="dr"><span class="dk">'+r[0]+'</span><span class="dv">'+esc(r[1])+'</span></div>';});
+  document.getElementById('emDetailBody').innerHTML=h;
+  document.getElementById('emDone').textContent=ev.done?'标记未完成':'标记完成';
+  showEM('detail');
+  document.getElementById('eventModal').classList.add('show');
+}
+function editFromDetail(){
+  var ev=events.find(function(x){return x.id===currentDetailId;});
+  if(!ev)return;
+  document.getElementById('eDate').value=ev.date;
+  document.getElementById('eCat').value=ev.cat;
+  document.getElementById('eTitle').value=ev.title;
+  document.getElementById('eValue').value=ev.value?ev.value:'';
+  document.getElementById('eNote').value=ev.note||'';
+  editingId=ev.id;
+  document.getElementById('emTitle').textContent='编辑记录';
+  document.getElementById('eSubmit').textContent='保存修改';
+  showEM('form');
+}
+function submitEvent(e){
   e.preventDefault();
   var date=document.getElementById('eDate').value;
   var cat=document.getElementById('eCat').value;
@@ -861,35 +943,25 @@ function addEvent(e){
   if(editingId){
     var ev=events.find(function(x){return x.id===editingId;});
     if(ev){ev.date=date;ev.cat=cat;ev.title=title;ev.value=num;ev.note=note;}
-    editingId=null;
-    saveEvents();markInit();
-    document.getElementById('eventForm').reset();
-    document.getElementById('eDate').value=today();
-    document.getElementById('eSubmit').textContent='记一笔';
-    expId=null;
-    renderAll();toast('已更新');
-    return false;
+  }else{
+    events.push({id:'e'+Date.now(),date:date,cat:cat,title:title,value:num,note:note,done:false});
   }
-  events.push({id:'e'+Date.now(),date:date,cat:cat,title:title,value:num,note:note,done:false});
   saveEvents();markInit();
-  document.getElementById('eventForm').reset();
-  document.getElementById('eDate').value=today();
-  renderAll();toast('已记录');
+  closeEventModal();
+  renderAll();toast(editingId?'已更新':'已记录');
   return false;
 }
-function toggleDetail(id){expId=(expId===id)?null:id;renderEvents();renderCalDetail();}
-function editEvent(id){
-  var ev=events.find(function(x){return x.id===id;});
-  if(!ev)return;
-  document.getElementById('eDate').value=ev.date;
-  document.getElementById('eCat').value=ev.cat;
-  document.getElementById('eTitle').value=ev.title;
-  document.getElementById('eValue').value=ev.value?ev.value:'';
-  document.getElementById('eNote').value=ev.note||'';
-  editingId=ev.id;
-  document.getElementById('eSubmit').textContent='保存修改';
-  switchView('events');
-  window.scrollTo({top:0,behavior:'smooth'});
+function toggleDoneFromDetail(){
+  var ev=events.find(function(x){return x.id===currentDetailId;});
+  if(ev){ev.done=!ev.done;saveEvents();renderAll();viewDetail(currentDetailId);}
+}
+function showEM(which){
+  document.getElementById('eventForm').style.display=(which==='form')?'block':'none';
+  document.getElementById('emDetail').style.display=(which==='detail')?'block':'none';
+}
+function closeEventModal(){
+  document.getElementById('eventModal').classList.remove('show');
+  editingId=null;currentDetailId=null;
 }
 function detailHTML(e){
   var rows=[['日期',e.date],['分类',e.cat],['内容',e.title],['数值',e.value?valText(e):'—'],['备注',e.note?e.note:'—'],['状态',e.done?'已完成':'未完成']];
@@ -906,7 +978,7 @@ function toggleDone(id){
 function delEvent(id){
   if(!confirm('删除这条记录？'))return;
   events=events.filter(function(x){return x.id!==id;});
-  saveEvents();renderAll();toast('已删除');
+  saveEvents();renderAll();closeEventModal();toast('已删除');
 }
 function renderEvents(){
   var box=document.getElementById('eventList');
@@ -917,13 +989,12 @@ function renderEvents(){
     var c=CATS[e.cat]||{color:'#f59e0b'};
     var sub=e.date+' · '+(e.note?esc(e.note):'');
     if(e.value){sub+=' · '+valText(e);}
-    html+='<div class="eitem'+(e.done?' done':'')+(expId===e.id?' open':'')+'">';
+    html+='<div class="eitem'+(e.done?' done':'')+'">';
     html+='<button class="chk" onclick="toggleDone(\''+e.id+'\')"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.2 4.2L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
-    html+='<div class="body" onclick="toggleDetail(\''+e.id+'\')"><div class="et">'+esc(e.title)+'</div><div class="es">'+sub+'</div></div>';
+    html+='<div class="body" onclick="viewDetail(\''+e.id+'\')"><div class="et">'+esc(e.title)+'</div><div class="es">'+sub+'</div></div>';
     html+='<span class="tag" style="background:'+c.color+'1a;color:'+c.color+'">'+esc(e.cat)+'</span>';
     html+='<button class="del" onclick="delEvent(\''+e.id+'\')">删除</button>';
-    if(expId===e.id){html+=detailHTML(e);}
-    html+='</div>';
+        html+='</div>';
   });
   box.innerHTML=html;
 }
@@ -1023,13 +1094,12 @@ function renderCalDetail(){
     dayEvents.sort(function(a,b){return b.id.localeCompare(a.id);}).forEach(function(e){
       var c=CATS[e.cat]||{color:'#f59e0b'};
       var sub=(e.note?esc(e.note):'')+(e.value?(' · '+valText(e)):'');
-      html+='<div class="eitem'+(e.done?' done':'')+(expId===e.id?' open':'')+'">';
+      html+='<div class="eitem'+(e.done?' done':'')+'">';
       html+='<button class="chk" onclick="toggleDone(\''+e.id+'\')"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.2 4.2L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
-      html+='<div class="body" onclick="toggleDetail(\''+e.id+'\')"><div class="et">'+esc(e.title)+'</div><div class="es">'+sub+'</div></div>';
+      html+='<div class="body" onclick="viewDetail(\''+e.id+'\')"><div class="et">'+esc(e.title)+'</div><div class="es">'+sub+'</div></div>';
       html+='<span class="tag" style="background:'+c.color+'1a;color:'+c.color+'">'+esc(e.cat)+'</span>';
       html+='<button class="del" onclick="delEvent(\''+e.id+'\')">删除</button>';
-      if(expId===e.id){html+=detailHTML(e);}
-      html+='</div>';
+            html+='</div>';
     });
     html+='</div>';
   }
