@@ -164,6 +164,13 @@
   @media (min-width:769px){
     .bottomtabs{display:none}
   }
+
+  /* 名言警句 */
+  .quoteline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding:10px 14px;background:linear-gradient(90deg,#fff7ed,#fef2f2);border:1px solid #fed7aa;border-radius:12px;color:#9a3412;font-size:14px;line-height:1.5}
+  .quoteline .qmark{font-size:22px;font-weight:700;color:#fb923c;line-height:0}
+  #dailyQuote{flex:1;min-width:120px;font-style:italic}
+  .qlink{margin-left:auto;border:none;background:#fb923c;color:#fff;border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;min-height:34px}
+  .qlink:active{transform:scale(.96)}
 </style>
 </head>
 <body>
@@ -198,12 +205,16 @@
   <main class="main">
     <div class="topbar">
       <h1>全能生活工作台</h1>
-      <span class="badge" id="modeBadge">本地存储</span>
       <span class="spacer"></span>
       <button class="tbtn" onclick="exportJSON()">导出</button>
       <button class="tbtn" onclick="document.getElementById('importFile2').click()">导入</button>
       <input type="file" id="importFile2" accept="application/json,.json" style="display:none" onchange="importJSON(this.files[0]);this.value=''">
       <button class="tbtn danger" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="quoteline">
+      <span class="qmark">“</span><span id="dailyQuote"></span><span class="qmark">”</span>
+      <button class="qlink" onclick="rollQuote()" title="换一句">↻ 换一句</button>
     </div>
 
     <div class="content">
@@ -389,6 +400,50 @@ function seed(){
 }
 
 /* ============ 初始化 ============ */
+/* ============ 名言警句 ============ */
+const QUOTES=[
+ "路漫漫其修远兮，吾将上下而求索。",
+ "不积跬步，无以至千里；不积小流，无以成江海。",
+ "三军可夺帅也，匹夫不可夺志也。",
+ "天行健，君子以自强不息。",
+ "宝剑锋从磨砺出，梅花香自苦寒来。",
+ "千磨万击还坚劲，任尔东西南北风。",
+ "业精于勤，荒于嬉；行成于思，毁于随。",
+ "黑发不知勤学早，白首方悔读书迟。",
+ "纸上得来终觉浅，绝知此事要躬行。",
+ "熟读唐诗三百首，不会作诗也会吟。",
+ "读书破万卷，下笔如有神。",
+ "书山有路勤为径，学海无涯苦作舟。",
+ "知之者不如好之者，好之者不如乐之者。",
+ "学而不思则罔，思而不学则殆。",
+ "工欲善其事，必先利其器。",
+ "千里之行，始于足下。",
+ "锲而不舍，金石可镂。",
+ "精诚所至，金石为开。",
+ "只要功夫深，铁杵磨成针。",
+ "世上无难事，只怕有心人。",
+ "少壮不努力，老大徒伤悲。",
+ "莫等闲，白了少年头，空悲切。",
+ "志当存高远。",
+ "穷且益坚，不坠青云之志。",
+ "老骥伏枥，志在千里；烈士暮年，壮心不已。",
+ "海纳百川，有容乃大；壁立千仞，无欲则刚。",
+ "静坐常思己过，闲谈莫论人非。",
+ "知足者常乐，能忍者自安。",
+ "良言一句三冬暖，恶语伤人六月寒。",
+ "己所不欲，勿施于人。",
+ "君子坦荡荡，小人长戚戚。",
+ "滴水穿石，非一日之功。",
+ "逆水行舟，不进则退。",
+ "临渊羡鱼，不如退而结网。",
+ "一年之计在于春，一日之计在于晨。",
+ "吃得苦中苦，方为人上人。"
+];
+function rollQuote(){
+  var el=document.getElementById('dailyQuote');
+  if(el) el.textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+}
+
 function init(){
   if(!localStorage.getItem(PREFIX+'initialized')){seed();}
   else{load();}
@@ -397,6 +452,7 @@ function init(){
   var dm=parseD(today());
   calYear=dm.getFullYear();calMonth=dm.getMonth();
   renderAll();
+  rollQuote();
 }
 
 /* ============ 渲染总入口 ============ */
