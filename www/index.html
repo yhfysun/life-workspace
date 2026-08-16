@@ -224,9 +224,10 @@
   }
 
   /* 名言警句 */
-  .quoteline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding:10px 14px;background:linear-gradient(90deg,#fff7ed,#fef2f2);border:1px solid #fed7aa;border-radius:12px;color:#9a3412;font-size:14px;line-height:1.5;box-shadow:var(--shadow-sm)}
-  .quoteline .qmark{font-size:22px;font-weight:700;color:#fb923c;line-height:0}
-  #dailyQuote{flex:1;min-width:120px;font-style:italic}
+  .quoteline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:16px 18px;background:var(--card);border:1px solid rgba(231,234,241,.7);border-left:4px solid var(--amber);border-radius:var(--radius-lg);color:var(--ink);font-size:14px;line-height:1.6;box-shadow:var(--shadow);transition:transform .18s ease,box-shadow .18s ease}
+  .quoteline:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .quoteline .qmark{font-size:30px;font-weight:700;color:var(--amber);line-height:1;flex:0 0 auto}
+  #dailyQuote{flex:1;min-width:120px;font-style:italic;color:var(--ink)}
   .qlink{margin-left:auto;border:none;background:#fb923c;color:#fff;border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;min-height:34px}
   .qlink:active{transform:scale(.96)}
 
@@ -310,11 +311,12 @@
       <button class="tbtn danger" onclick="clearAll()">清空</button>
     </div>
 
-    <div class="quoteline">
-      <span class="qmark">“</span><span id="dailyQuote"></span><span class="qmark">”</span>
-    </div>
-
     <div class="content">
+      <!-- 名言警句 -->
+      <div class="quoteline">
+        <span class="qmark">“</span><span id="dailyQuote"></span><span class="qmark">”</span>
+      </div>
+
       <!-- 今天要处理 -->
       <section class="today" id="todayCard"></section>
 
