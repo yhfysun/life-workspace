@@ -797,7 +797,7 @@ function importJSON(file){
   reader.readAsText(file);
 }
 function exportCSV(){
-  var rows=[['日期','分类','标题','数值','备注','状态']];
+  var rows=[['日期','分类','内容','数值','备注','状态']];
   events.slice().sort(function(a,b){return a.date.localeCompare(b.date);}).forEach(function(e){
     rows.push([e.date,e.cat,e.title,e.value||'',e.note||'',e.done?'已完成':'待处理']);
   });
