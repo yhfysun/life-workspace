@@ -112,26 +112,47 @@
   .eitem .del:hover{color:var(--red)}
 
   /* calendar */
-  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 2px}
+  .cal-wrap{background:linear-gradient(180deg,#ffffff 0%,#fafbff 100%);border:1px solid var(--line);border-radius:18px;padding:18px 16px 14px;box-shadow:0 6px 24px rgba(91,91,240,.08)}
+  .cal-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 2px 14px;padding:0 2px 14px;border-bottom:1px dashed var(--line)}
+  .cal-summary .sbox{text-align:center;padding:6px 4px;border-radius:10px;background:rgba(91,91,240,.04)}
+  .cal-summary .sbox .n{font-size:18px;font-weight:800;color:var(--primary);letter-spacing:.3px}
+  .cal-summary .sbox .l{font-size:11px;color:var(--sub);margin-top:2px;letter-spacing:.5px}
+  .cal-summary .sbox.green .n{color:var(--green)}
+  .cal-summary .sbox.red .n{color:var(--red)}
+  .cal-summary .sbox.amber .n{color:var(--amber)}
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px}
   .cal-head .mt{font-weight:800;font-size:18px;letter-spacing:.3px}
-  .cal-nav{display:flex;gap:8px}
+  .cal-nav{display:flex;gap:8px;align-items:center}
+  .cal-today-btn{font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:600;min-height:34px}
+  .cal-today-btn:hover{border-color:var(--primary);color:var(--primary)}
   .cal-nav button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--sub);display:flex;align-items:center;justify-content:center;transition:.15s}
   .cal-nav button:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px);box-shadow:0 4px 10px rgba(91,91,240,.15)}
   .cal-nav button svg{width:18px;height:18px}
-  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
-  .gdow{text-align:center;font-size:12px;color:var(--sub);padding:2px 0 9px;font-weight:700;letter-spacing:1px}
-  .gcell{aspect-ratio:1/1;border-radius:13px;border:1px solid var(--line);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:4px;position:relative;cursor:pointer;transition:.16s;min-height:46px}
-  .gcell:hover{border-color:var(--primary);box-shadow:0 6px 16px rgba(91,91,240,.14);transform:translateY(-2px)}
-  .gcell.muted{background:#fbfcfe;color:#cdd3df;border-color:transparent}
-  .gcell.muted .d{color:#cdd3df}
-  .gcell.today{background:var(--primary);border-color:var(--primary);box-shadow:0 8px 20px rgba(91,91,240,.32)}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;grid-auto-rows:108px}
+  .gdow{text-align:center;font-size:12px;color:var(--sub);padding:2px 0 8px;font-weight:700;letter-spacing:1.5px}
+  .gcell{position:relative;cursor:pointer;border-radius:12px;border:1px solid var(--line);background:#fff;display:flex;flex-direction:column;align-items:stretch;padding:6px 6px 8px;overflow:hidden;transition:.18s}
+  .gcell:hover{border-color:var(--primary);box-shadow:0 6px 18px rgba(91,91,240,.16);transform:translateY(-1px)}
+  .gcell .gtop{display:flex;align-items:center;justify-content:space-between;height:20px}
+  .gcell .d{font-size:14px;font-weight:700;color:var(--ink)}
+  .gcell .badge-n{font-size:10px;font-weight:700;line-height:1;padding:3px 6px;border-radius:6px;background:rgba(91,91,240,.12);color:var(--primary);min-width:18px;text-align:center}
+  .gcell .chip{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;line-height:1;padding:3px 5px;border-radius:5px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+  .gcell .chip i{width:6px;height:6px;border-radius:50%;flex:0 0 6px}
+  .gcell .chips{display:flex;flex-direction:column;gap:0;margin-top:4px;overflow:hidden}
+  .gcell .more{font-size:10px;color:var(--sub);margin-top:3px;text-align:right;line-height:1}
+  .gcell.muted{background:#f8fafc;color:#cbd5e1;border-color:transparent}
+  .gcell.muted .d{color:#cbd5e1}
+  .gcell.muted .chip{opacity:.55}
+  .gcell.has-events{background:linear-gradient(180deg,#ffffff 0%,#f8f9ff 100%)}
+  .gcell.busy{background:linear-gradient(180deg,#f0f3ff 0%,#e8edff 100%)}
+  .gcell.today{background:linear-gradient(135deg,#5b5bf0 0%,#7c3aed 100%);border-color:transparent;box-shadow:0 8px 22px rgba(91,91,240,.4),inset 0 1px 0 rgba(255,255,255,.25)}
   .gcell.today .d{color:#fff}
-  .gcell.today .dots i{outline:1.5px solid rgba(255,255,255,.9)}
-  .gcell.sel{background:var(--primary-soft);border-color:var(--primary)}
-  .gcell .d{font-size:14px;font-weight:600;color:var(--ink)}
-  .gcell .dots{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;max-width:100%}
-  .gcell .dots i{width:6px;height:6px;border-radius:50%;display:block}
-  .cal-legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin:16px 2px 2px;font-size:12px;color:var(--sub)}
+  .gcell.today .badge-n{background:rgba(255,255,255,.92);color:var(--primary)}
+  .gcell.today .chip{background:rgba(255,255,255,.18);color:#fff;backdrop-filter:blur(2px)}
+  .gcell.today .chip i{outline:1.5px solid rgba(255,255,255,.95)}
+  .gcell.today .more{color:rgba(255,255,255,.85)}
+  .gcell.sel{box-shadow:0 0 0 2px var(--primary),0 8px 22px rgba(91,91,240,.25)}
+  .gcell.sel.has-events{background:linear-gradient(180deg,#eef2ff 0%,#e0e7ff 100%)}
+  .cal-legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin:16px 2px 0;font-size:12px;color:var(--sub);padding-top:12px;border-top:1px dashed var(--line)}
   .cal-legend span{display:flex;align-items:center;gap:6px;font-weight:600}
   .cal-legend i{width:10px;height:10px;border-radius:3px;display:block}
   .cal-detail{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px}
@@ -300,11 +321,13 @@
 
       <!-- 日历 -->
       <section class="view" id="view-calendar">
-        <div class="view-head"><h2>📅 日历视图</h2><span class="desc">点日期看当天事件，彩色点为分类</span></div>
-        <div class="card">
+        <div class="view-head"><h2>📅 日历视图</h2><span class="desc">点日期看当天事件，彩色徽章为分类</span></div>
+        <div class="cal-wrap">
+          <div class="cal-summary" id="calSummary"></div>
           <div class="cal-head">
             <span class="mt" id="calMonth"></span>
             <div class="cal-nav">
+              <button class="cal-today-btn" onclick="goToday()" title="回到今天">今天</button>
               <button onclick="shiftMonth(-1)" aria-label="上个月"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <button onclick="shiftMonth(1)" aria-label="下个月"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
@@ -655,6 +678,14 @@ function shiftMonth(n){
   if(calMonth>11){calMonth=0;calYear++;}
   renderCalendar();
 }
+function goToday(){
+  var d=new Date();
+  calYear=d.getFullYear();
+  calMonth=d.getMonth();
+  selDate=today();
+  document.getElementById('eDate').value=selDate;
+  renderCalendar();
+}
 function renderCalendar(){
   var grid=document.getElementById('calGrid');
   document.getElementById('calMonth').textContent=calYear+'年'+(calMonth+1)+'月';
@@ -666,23 +697,56 @@ function renderCalendar(){
   var t=today();
   // 上月补位
   var prevDays=new Date(calYear,calMonth,0).getDate();
-  for(var i=0;i<startDow;i++){h+='<div class="gcell muted"><span class="d">'+(prevDays-startDow+1+i)+'</span></div>';}
+  for(var i=0;i<startDow;i++){h+='<div class="gcell muted"><div class="gtop"><span class="d">'+(prevDays-startDow+1+i)+'</span></div></div>';}
   for(var d=1;d<=daysInMonth;d++){
     var ds=calYear+'-'+pad(calMonth+1)+'-'+pad(d);
     var dayEvents=events.filter(function(e){return e.date===ds;});
-    var dots='';
-    var seen={};
-    dayEvents.forEach(function(e){var c=(CATS[e.cat]||{color:'#f59e0b'}).color;if(!seen[c]){seen[c]=1;dots+='<i style="background:'+c+'"></i>';}});
-    var cls='gcell'+(ds===t?' today':'')+(selDate===ds?' sel':'');
-    h+='<div class="'+cls+'" onclick="pickDate(\''+ds+'\')"><span class="d">'+d+'</span><div class="dots">'+dots+'</div></div>';
+    var n=dayEvents.length;
+    var classes=['gcell'];
+    if(ds===t)classes.push('today');
+    if(selDate===ds)classes.push('sel');
+    if(n>0)classes.push('has-events');
+    if(n>=3)classes.push('busy');
+    var inner='<div class="gtop"><span class="d">'+d+'</span>';
+    if(n>0)inner+='<span class="badge-n">'+n+'</span>';
+    inner+='</div>';
+    if(n>0){
+      inner+='<div class="chips">';
+      var max=3;
+      for(var i2=0;i2<Math.min(n,max);i2++){
+        var e=dayEvents[i2];
+        var c=(CATS[e.cat]||{color:'#f59e0b'}).color;
+        var t2=e.title.length>6?e.title.slice(0,6)+'…':e.title;
+        inner+='<div class="chip" style="background:'+c+'"><i></i>'+esc(t2)+'</div>';
+      }
+      if(n>max)inner+='<div class="more">+'+(n-max)+' 更多</div>';
+      inner+='</div>';
+    }
+    h+='<div class="'+classes.join(' ')+'" onclick="pickDate(\''+ds+'\')">'+inner+'</div>';
   }
   // 下月补位
   var total=startDow+daysInMonth;
   var rem=(7-total%7)%7;
-  for(var k=1;k<=rem;k++){h+='<div class="gcell muted"><span class="d">'+k+'</span></div>';}
+  for(var k=1;k<=rem;k++){h+='<div class="gcell muted"><div class="gtop"><span class="d">'+k+'</span></div></div>';}
   grid.innerHTML=h;
   if(!selDate)selDate=t;
+  renderCalSummary();
   renderCalDetail();
+}
+function renderCalSummary(){
+  var box=document.getElementById('calSummary');
+  if(!box)return;
+  var monthPrefix=calYear+'-'+pad(calMonth+1);
+  var monthEvents=events.filter(function(e){return e.date.indexOf(monthPrefix)===0;});
+  var done=monthEvents.filter(function(e){return e.done;}).length;
+  var spent=0;
+  monthEvents.forEach(function(e){if(e.cat==='消费'&&e.value)spend+=Number(e.value);});
+  var exercise=monthEvents.filter(function(e){return e.cat==='锻炼';}).length;
+  box.innerHTML=
+    '<div class="sbox"><div class="n">'+monthEvents.length+'</div><div class="l">本月事件</div></div>'+
+    '<div class="sbox green"><div class="n">'+done+'</div><div class="l">已完成</div></div>'+
+    '<div class="sbox red"><div class="n">¥'+spent.toFixed(0)+'</div><div class="l">本月支出</div></div>'+
+    '<div class="sbox amber"><div class="n">'+exercise+'</div><div class="l">锻炼次数</div></div>';
 }
 function pickDate(ds){
   selDate=ds;
