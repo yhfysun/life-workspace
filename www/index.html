@@ -257,7 +257,6 @@
 
     <div class="quoteline">
       <span class="qmark">“</span><span id="dailyQuote"></span><span class="qmark">”</span>
-      <button class="qlink" onclick="rollQuote()" title="换一句">↻ 换一句</button>
     </div>
 
     <div class="content">
@@ -750,7 +749,10 @@ const QUOTES=[
 ];
 function rollQuote(){
   var el=document.getElementById('dailyQuote');
-  if(el) el.textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  if(!el||!QUOTES.length)return;
+  var q;
+  do{ q=QUOTES[Math.floor(Math.random()*QUOTES.length)]; }while(QUOTES.length>1 && q===el.textContent);
+  el.textContent=q;
 }
 
 function init(){
@@ -1172,6 +1174,7 @@ function switchView(v){
   if(v==='calendar')renderCalendar();
   if(v==='stats')renderStats();
   window.scrollTo({top:0,behavior:'smooth'});
+  rollQuote();
 }
 
 /* ============ 工具 ============ */
