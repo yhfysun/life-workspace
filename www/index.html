@@ -996,7 +996,7 @@ function renderCalSummary(){
   var monthEvents=events.filter(function(e){return e.date.indexOf(monthPrefix)===0;});
   var done=monthEvents.filter(function(e){return e.done;}).length;
   var spent=0;
-  monthEvents.forEach(function(e){if(e.cat==='消费'&&e.value)spend+=Number(e.value);});
+  monthEvents.forEach(function(e){if(e.cat==='消费'&&e.value)spent+=Number(e.value);});
   var exercise=monthEvents.filter(function(e){return e.cat==='锻炼';}).length;
   box.innerHTML=
     '<div class="sbox"><div class="n">'+monthEvents.length+'</div><div class="l">本月事件</div></div>'+
