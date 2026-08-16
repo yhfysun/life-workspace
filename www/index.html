@@ -171,6 +171,17 @@
   #dailyQuote{flex:1;min-width:120px;font-style:italic}
   .qlink{margin-left:auto;border:none;background:#fb923c;color:#fff;border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;min-height:34px}
   .qlink:active{transform:scale(.96)}
+
+  /* 事件明细展开 */
+  .body{cursor:pointer}
+  .eitem.open{background:#fffbeb}
+  .edetail{width:100%;margin-top:10px;padding-top:10px;border-top:1px dashed #fde68a;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+  .edetail .dr{display:flex;gap:8px;font-size:13px;line-height:1.4}
+  .edetail .dk{color:var(--sub);min-width:36px;flex:none}
+  .edetail .dv{color:var(--text);word-break:break-all}
+  .edetail .dact{grid-column:1/-1;display:flex;gap:8px;margin-top:4px}
+  .edetail .dact .btn{min-height:34px}
+  @media(max-width:480px){.edetail{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -267,7 +278,7 @@
             <input id="eTitle" placeholder="内容，如 晨跑 / 聚餐 / 复习" required>
             <input id="eValue" type="number" placeholder="数值(可选)" step="any" min="0">
             <input id="eNote" placeholder="备注(可选)">
-            <button type="submit" class="btn primary">记一笔</button>
+            <button type="submit" class="btn primary" id="eSubmit">记一笔</button>
           </form>
         </div>
         <div class="card">
@@ -362,6 +373,7 @@ var GOAL_PRESETS={
 
 /* ============ 状态 ============ */
 var goals=[], events=[];
+var expId=null, editingId=null;
 var calYear, calMonth; // 当前日历年月
 
 /* ============ 存储 ============ */
@@ -546,12 +558,47 @@ function addEvent(e){
   var val=document.getElementById('eValue').value;
   var note=document.getElementById('eNote').value.trim();
   if(!date||!title){toast('请填写日期和内容');return false;}
-  events.push({id:'e'+Date.now(),date:date,cat:cat,title:title,value:(val===''||isNaN(parseFloat(val)))?0:parseFloat(val),note:note,done:false});
+  var num=(val===''||isNaN(parseFloat(val)))?0:parseFloat(val);
+  if(editingId){
+    var ev=events.find(function(x){return x.id===editingId;});
+    if(ev){ev.date=date;ev.cat=cat;ev.title=title;ev.value=num;ev.note=note;}
+    editingId=null;
+    saveEvents();markInit();
+    document.getElementById('eventForm').reset();
+    document.getElementById('eDate').value=today();
+    document.getElementById('eSubmit').textContent='记一笔';
+    expId=null;
+    renderAll();toast('已更新');
+    return false;
+  }
+  events.push({id:'e'+Date.now(),date:date,cat:cat,title:title,value:num,note:note,done:false});
   saveEvents();markInit();
   document.getElementById('eventForm').reset();
   document.getElementById('eDate').value=today();
   renderAll();toast('已记录');
   return false;
+}
+function toggleDetail(id){expId=(expId===id)?null:id;renderEvents();renderCalDetail();}
+function editEvent(id){
+  var ev=events.find(function(x){return x.id===id;});
+  if(!ev)return;
+  document.getElementById('eDate').value=ev.date;
+  document.getElementById('eCat').value=ev.cat;
+  document.getElementById('eTitle').value=ev.title;
+  document.getElementById('eValue').value=ev.value?ev.value:'';
+  document.getElementById('eNote').value=ev.note||'';
+  editingId=ev.id;
+  document.getElementById('eSubmit').textContent='保存修改';
+  switchView('events');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function detailHTML(e){
+  var rows=[['日期',e.date],['分类',e.cat],['内容',e.title],['数值',e.value?valText(e):'—'],['备注',e.note?e.note:'—'],['状态',e.done?'已完成':'未完成']];
+  var h='<div class="edetail">';
+  rows.forEach(function(r){h+='<div class="dr"><span class="dk">'+r[0]+'</span><span class="dv">'+esc(r[1])+'</span></div>';});
+  h+='<div class="dact"><button class="btn sm" onclick="editEvent(\''+e.id+'\')">编辑</button><button class="btn sm danger" onclick="delEvent(\''+e.id+'\')">删除</button></div>';
+  h+='</div>';
+  return h;
 }
 function toggleDone(id){
   var ev=events.find(function(x){return x.id===id;});
@@ -571,11 +618,12 @@ function renderEvents(){
     var c=CATS[e.cat]||{color:'#f59e0b'};
     var sub=e.date+' · '+(e.note?esc(e.note):'');
     if(e.value){sub+=' · '+valText(e);}
-    html+='<div class="eitem'+(e.done?' done':'')+'">';
+    html+='<div class="eitem'+(e.done?' done':'')+(expId===e.id?' open':'')+'">';
     html+='<button class="chk" onclick="toggleDone(\''+e.id+'\')"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.2 4.2L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
-    html+='<div class="body"><div class="et">'+esc(e.title)+'</div><div class="es">'+sub+'</div></div>';
+    html+='<div class="body" onclick="toggleDetail(\''+e.id+'\')"><div class="et">'+esc(e.title)+'</div><div class="es">'+sub+'</div></div>';
     html+='<span class="tag" style="background:'+c.color+'1a;color:'+c.color+'">'+esc(e.cat)+'</span>';
     html+='<button class="del" onclick="delEvent(\''+e.id+'\')">删除</button>';
+    if(expId===e.id){html+=detailHTML(e);}
     html+='</div>';
   });
   box.innerHTML=html;
@@ -635,11 +683,12 @@ function renderCalDetail(){
     dayEvents.sort(function(a,b){return b.id.localeCompare(a.id);}).forEach(function(e){
       var c=CATS[e.cat]||{color:'#f59e0b'};
       var sub=(e.note?esc(e.note):'')+(e.value?(' · '+valText(e)):'');
-      html+='<div class="eitem'+(e.done?' done':'')+'">';
+      html+='<div class="eitem'+(e.done?' done':'')+(expId===e.id?' open':'')+'">';
       html+='<button class="chk" onclick="toggleDone(\''+e.id+'\')"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.2 4.2L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
-      html+='<div class="body"><div class="et">'+esc(e.title)+'</div><div class="es">'+sub+'</div></div>';
+      html+='<div class="body" onclick="toggleDetail(\''+e.id+'\')"><div class="et">'+esc(e.title)+'</div><div class="es">'+sub+'</div></div>';
       html+='<span class="tag" style="background:'+c.color+'1a;color:'+c.color+'">'+esc(e.cat)+'</span>';
       html+='<button class="del" onclick="delEvent(\''+e.id+'\')">删除</button>';
+      if(expId===e.id){html+=detailHTML(e);}
       html+='</div>';
     });
     html+='</div>';
